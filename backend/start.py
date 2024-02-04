@@ -1,19 +1,32 @@
 from datasource.api import APICollector
-from contracts.schema import GenericSchema, CompraSchema
+from datasource.postgre import PostgresCollector
+from contracts.schema import CompraSchema
 from tools.aws.client import S3Client
-import schedule
-import time
 
+import time
+import schedule
+
+schema = CompraSchema
 aws = S3Client()
 
-def apiCollector(CompraSchema, aws, repeat):
-    response = APICollector(CompraSchema, aws).start(repeat)
-    print('Executei')
+
+def apiCollector(schema, aws, repeat):
+    reponse = APICollector(schema, aws).start(repeat)
+    print("Executei")
     return
 
-schedule.every(1).minutes.do(apiCollector,CompraSchema, aws, 10)
+
+def getPostgre(aws, dbId):
+    postgres = PostgresCollector(aws, dbId).start()
 
 
-while True:
-    schedule.run_pending()
-    time.sleep(2)
+# schedule.every(1).minutes.do(apiCollector,schema, aws, 50)
+
+
+# while True:
+#     schedule.run_pending()
+#     time.sleep(1)
+
+getPostgre(aws, dbId=1)
+getPostgre(aws, dbId=2)
+
